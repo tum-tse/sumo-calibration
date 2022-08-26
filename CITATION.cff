@@ -1,0 +1,11 @@
+cff-version: 0.1.0
+message: "If you use these outputs, please cite it as below."
+authors:
+  - family-names: Mahajan
+    given-names: Vishal
+  - family-names: Antoniou
+    given-names: Constantinos
+title: "Munich Scenario"
+version: 0.1.4
+url: https://github.com/tum-tse/sumo-calibration.git
+date-released: 2022-08-26
