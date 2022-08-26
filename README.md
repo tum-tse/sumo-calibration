@@ -11,3 +11,9 @@
 
 ### Observed vs Simulated fit of counts
 <img src="outputs/munich/images/simulated-real-fit.png"  alt="OD Matrix" width="400">
+
+### Citing
+If you find this repository useful, Kindly cite
+```sh
+Mahajan, V., & Antoniou, C. (2022). Munich Scenario (Version 0.1.4) [Computer software]. https://github.com/tum-tse/sumo-calibration.git
+```
