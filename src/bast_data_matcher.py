@@ -40,22 +40,22 @@ def read_locations(file_name):
 			#  "verkehr_tag": kfz_verkehr_tag, "schwerverkehr_tag": schwerverkehr_tag})
 	return df_bast
 
-def scrappe_bast(df_bast, scrape_folder='../data/BAST/scrapped'):
+def web_bast(df_bast, web_folder):
 	for row in tqdm(range(0, len(df_bast))):
 		url = "https://www.bast.de/BASt_2017/DE/Verkehrstechnik/Fachthemen/"+\
 				"v2-verkehrszaehlung/Aktuell/zaehl_aktuell_node.html?nn=1819516&cms_detail="+\
 			str(list(df_bast.place_no)[row])+"&cms_map=0"
 		res = requests.get(url)
-		html_file = open(scrape_folder+'/'+str(list(df_bast.place_no)[row])+".json",'w')
+		html_file = open(web_folder+'/'+str(list(df_bast.place_no)[row])+".json",'w')
 		html_file.write(res.text)
 		html_file.close()
 		time.sleep(4)
-	print("Scrapping Done")
+	print("Web data received")
 
-def read_scrapped(scrape_folder='../data/BAST/scrapped'):
+def read_web(web_folder):
 	'''Reading attributes from the data
 	'''
-	files = glob.glob(scrape_folder+'/*.json')
+	files = glob.glob(web_folder+'/*.json')
 	place_no = []
 	direction_1_short = []
 	direction_1_long = []
@@ -248,22 +248,22 @@ if __name__ == "__main__":
 	# specify the paths to the I/O files
 	BAST_LOCATION_FILE 		= '../data/BAST/locations.txt'
 	SAVE_DETECTOR_FILE 		= '../scenario_munich/bast_detectors.csv'
-	RAW_SCRAPPED_LOCATION 	= '../data/BAST/scrapped'
+	RAW_WEB_LOCATION 	= '../data/BAST/web'
 	FINAL_OUTPUT 			= '../data/bast_detectors_munich.csv'
 
 	# BBOX for the location of interest
 	AREA_BBOX = [48.2735, 48.0164,11.778,11.37]
 
-	# This part of the code can be disabled after first run to avoid repeater scrapping
+	# This part of the code can be disabled after first run to avoid repeating web data requests
 	df_bast = read_locations(file_name=BAST_LOCATION_FILE)
 	df_bast['lat'] = df_bast.apply(lambda x: utm.to_latlon(x.X, x.Y, zone_number=32, zone_letter="N")[0], axis=1)
 	df_bast['lon'] = df_bast.apply(lambda x: utm.to_latlon(x.X, x.Y, zone_number=32, zone_letter="N")[1], axis=1)
 	df_bast.to_csv(SAVE_DETECTOR_FILE, index=None)
 	df_bast = pd.read_csv(SAVE_DETECTOR_FILE, index=None)
-	scrappe_bast(df_bast, scrape_folder=RAW_SCRAPPED_LOCATION)
+	web_bast(df_bast, web_folder=RAW_WEB_LOCATION)
 
-	# Read scrapped data and create interim dataframe
-	direction_mapping = read_scrapped(scrape_folder=RAW_SCRAPPED_LOCATION)
+	# Read Web data and create interim dataframe
+	direction_mapping = read_web(web_folder=RAW_WEB_LOCATION)
 	df_bast = pd.merge(left = df_bast, right = direction_mapping, left_on="place_no", right_on="place_no")
 	df_bast.to_csv(SAVE_DETECTOR_FILE, index=None)
 
